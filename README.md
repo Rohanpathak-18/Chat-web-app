@@ -104,13 +104,6 @@ Special thanks to Chetan Majumdar (chetanthecoder) for guidance and support.
 
 ---
 
-## 📬 Contact
-
-- LinkedIn: https://linkedin.com/in/your-profile
-- GitHub: https://github.com/your-username
-
----
-
 ## ⭐ Show Your Support
 
 If you like this project, please ⭐ the repo!
