@@ -254,8 +254,6 @@ Contributions are welcome!
 
 GitHub: https://github.com/Rohanpathak-18
 
-LinkedIn: *(Add your LinkedIn Profile)*
-
 ---
 
 # ⭐ Support
@@ -263,12 +261,6 @@ LinkedIn: *(Add your LinkedIn Profile)*
 If you found this project useful, please give this repository a ⭐.
 
 It motivates me to build more exciting open-source projects.
-
----
-
-# 📜 License
-
-This project is licensed under the MIT License.
 
 ---
 
