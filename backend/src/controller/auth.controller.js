@@ -87,11 +87,6 @@ export const signup = async (req, res) => {
 // =========================
 // LOGIN
 // =========================
-
-import User from "../models/user.model.js";
-import bcrypt from "bcryptjs";
-import { generateToken } from "../lib/utils.js";
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
