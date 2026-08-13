@@ -117,20 +117,19 @@ export const login = async (req, res) => {
       });
     }
 
-    //  THIS IS IMPORTANT
+    //  THIS MUST BE HERE
     generateToken(user._id, res);
 
     console.log(
-      "Login successful for:",
+      "LOGIN SUCCESS:",
       user.email
     );
 
-    res.status(200).json({
+    return res.status(200).json({
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      profilePicture:
-        user.profilePicture || "",
+      profilePicture: user.profilePicture || "",
       createdAt: user.createdAt,
     });
 
@@ -140,7 +139,7 @@ export const login = async (req, res) => {
       error.message
     );
 
-    res.status(500).json({
+    return res.status(500).json({
       message: "Internal Server Error",
     });
   }
