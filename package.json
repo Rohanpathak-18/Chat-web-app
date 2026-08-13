@@ -1,0 +1,22 @@
+{
+  "name": "chat-app.react",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build":"",
+    "start":""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rohanpathak-18/Chat-web-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rohanpathak-18/Chat-web-app/issues"
+  },
+  "homepage": "https://github.com/Rohanpathak-18/Chat-web-app#readme"
+}
