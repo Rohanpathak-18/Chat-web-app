@@ -4,16 +4,7 @@ export const generateToken = (userId, res) => {
   const token = jwt.sign(
     { userId },
     process.env.JWT_SECRET,
-    {
-      expiresIn: "7d",
-    }
-  );
-
-  console.log("========== JWT DEBUG ==========");
-  console.log("JWT generated:", !!token);
-  console.log(
-    "JWT_SECRET exists:",
-    !!process.env.JWT_SECRET
+    { expiresIn: "7d" }
   );
 
   res.cookie("jwt", token, {
@@ -24,8 +15,8 @@ export const generateToken = (userId, res) => {
     path: "/",
   });
 
-  console.log("JWT cookie set");
-  console.log("===============================");
+  console.log("JWT CREATED:", !!token);
+  console.log("JWT SECRET EXISTS:", !!process.env.JWT_SECRET);
 
   return token;
 };
