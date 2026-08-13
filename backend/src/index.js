@@ -19,38 +19,20 @@ const PORT = process.env.PORT || 5001;
 
 const allowedOrigins = [
   "http://localhost:5173",
+  "https://chatsphere-web.onrender.com",
   "https://chatsphere-web.onrender.com"
 ];
 
-// ✅ Fixed CORS configuration
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) {
-        return callback(null, true);
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked: ${origin}`));
       }
-
-      // Check if origin is allowed
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // For development, allow any origin
-      if (process.env.NODE_ENV === "development") {
-        return callback(null, true);
-      }
-
-      // Block all other origins
-      const msg =
-        "The CORS policy for this site does not allow access from the specified Origin.";
-      return callback(new Error(msg), false);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    exposedHeaders: ["Set-Cookie"],
-    maxAge: 86400,
   })
 );
 
