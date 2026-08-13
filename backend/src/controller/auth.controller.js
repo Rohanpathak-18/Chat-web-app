@@ -9,9 +9,6 @@ import { serializeUser } from "../lib/userResponse.js";
 export const signup = async (req, res) => {
 
   const { fullName, email, password } = req.body
-
-
-  // for [password]
   try {
 
     if(!fullName || !email || !password){
@@ -23,12 +20,9 @@ export const signup = async (req, res) => {
     }
 
 
-// for email
     const user = await User.findOne({ email })
     if (user) return res.status(400).json({ message: "Email already exists" })
 
-
-// for keep the password private and safe
     const salt = await bcrypt.genSalt(10)
     const hashedPassword = await bcrypt.hash(password, salt)
 
@@ -45,10 +39,8 @@ export const signup = async (req, res) => {
       // generate JWT token here
       await newUser.save();
        generateToken(newUser._id, res)
-       
 
        res.status(201).json(serializeUser(newUser))
-
 
     }else{
       res.status(400).json({message: "Invalid user data"})
@@ -59,6 +51,7 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const login = async (req, res) => {
 
@@ -95,6 +88,8 @@ export const logout = (req, res) => {
   res.status(500).json({ message: "Internal Server Error" });
  }
 };
+
+
 
 export const updateProfile = async (req, res) => {
   try {
