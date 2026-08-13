@@ -9,14 +9,18 @@ import { serializeUser } from "../lib/userResponse.js";
 // =========================
 
 export const signup = async (req, res) => {
-  const {
-    fullName,
-    email,
-    password,
-  } = req.body;
-
   try {
-    if (!fullName || !email || !password) {
+    const {
+      fullName,
+      email,
+      password,
+    } = req.body;
+
+    if (
+      !fullName ||
+      !email ||
+      !password
+    ) {
       return res.status(400).json({
         message: "All fields are required",
       });
@@ -29,37 +33,48 @@ export const signup = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const existingUser =
+      await User.findOne({ email });
 
-    if (user) {
+    if (existingUser) {
       return res.status(400).json({
         message: "Email already exists",
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
+    const salt =
+      await bcrypt.genSalt(10);
 
-    const hashedPassword = await bcrypt.hash(
-      password,
-      salt
-    );
+    const hashedPassword =
+      await bcrypt.hash(
+        password,
+        salt
+      );
 
-    const newUser = new User({
+    const newUser = await User.create({
       fullName,
       email,
       password: hashedPassword,
     });
 
-    await newUser.save();
-
-    generateToken(newUser._id, res);
-
-    res.status(201).json(
-      serializeUser(newUser)
+    // IMPORTANT
+    generateToken(
+      newUser._id,
+      res
     );
+
+    res.status(201).json({
+      _id: newUser._id,
+      fullName: newUser.fullName,
+      email: newUser.email,
+      profilePicture:
+        newUser.profilePicture || "",
+      createdAt: newUser.createdAt,
+    });
+
   } catch (error) {
     console.log(
-      "Error in signup controller:",
+      "Error in signup:",
       error.message
     );
 
@@ -73,18 +88,25 @@ export const signup = async (req, res) => {
 // LOGIN
 // =========================
 
-export const login = async (req, res) => {
-  const {
-    email,
-    password,
-  } = req.body;
+import User from "../models/user.model.js";
+import bcrypt from "bcryptjs";
+import { generateToken } from "../lib/utils.js";
 
+export const login = async (req, res) => {
   try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required",
+      });
+    }
+
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
@@ -96,15 +118,27 @@ export const login = async (req, res) => {
 
     if (!isPasswordCorrect) {
       return res.status(400).json({
-        message: "Invalid credentials",
+        message: "Invalid email or password",
       });
     }
 
+    //  THIS IS IMPORTANT
     generateToken(user._id, res);
 
-    res.status(200).json(
-      serializeUser(user)
+    console.log(
+      "Login successful for:",
+      user.email
     );
+
+    res.status(200).json({
+      _id: user._id,
+      fullName: user.fullName,
+      email: user.email,
+      profilePicture:
+        user.profilePicture || "",
+      createdAt: user.createdAt,
+    });
+
   } catch (error) {
     console.log(
       "Error in login controller:",
@@ -134,6 +168,7 @@ export const logout = (req, res) => {
     res.status(200).json({
       message: "Logged out successfully",
     });
+
   } catch (error) {
     console.log(
       "Error in logout controller:",
