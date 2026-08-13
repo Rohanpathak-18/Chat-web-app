@@ -88,6 +88,8 @@ export const signup = async (req, res) => {
 // LOGIN
 // =========================
 export const login = async (req, res) => {
+  console.log("thjajlflhlawh")
+  console.log(req.body)
   try {
     const { email, password } = req.body;
 
@@ -98,7 +100,7 @@ export const login = async (req, res) => {
     }
 
     const user = await User.findOne({ email });
-
+console.log(user)
     if (!user) {
       return res.status(400).json({
         message: "Invalid email or password",

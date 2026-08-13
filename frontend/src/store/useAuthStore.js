@@ -111,55 +111,63 @@ export const useAuthStore = create((set, get) => ({
   // LOGIN
   // =========================
 
-  login: async (data) => {
-    set({
-      isLoggingIn: true,
-    });
+login: async (data) => {
+  console.log("🔐 [LOGIN] Starting login process");
+  console.log("🔐 [LOGIN] Login data:", { 
+    email: data?.email || data?.username || "unknown",
+    hasPassword: !!data?.password 
+  });
+  
+  set({ isLoggingIn: true });
 
-    try {
-      const res =
-        await axiosInstance.post(
-          "/auth/login",
-          data
-        );
-
-      console.log(
-        "Login response:",
-        res.data
-      );
-
-      set({
-        authUser: res.data,
-      });
-
-      toast.success(
-        "Logged in successfully"
-      );
-
-      // Socket connection
-      get().connectSocket();
-
-    } catch (error) {
-      console.log(
-        "Login status:",
-        error?.response?.status
-      );
-
-      console.log(
-        "Login error:",
-        error?.response?.data
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          "Login failed"
-      );
-    } finally {
-      set({
-        isLoggingIn: false,
-      });
+  try {
+    console.log("🔐 [LOGIN] Sending POST request to /auth/login");
+    
+    // ✅ FIXED: No trailing slash
+    const res = await axiosInstance.post("/auth/login", data);
+    
+    console.log("🔐 [LOGIN] ✅ Response received");
+    console.log("🔐 [LOGIN] Response status:", res.status);
+    console.log("🔐 [LOGIN] Response data:", res.data);
+    
+    if (!res.data) {
+      throw new Error("No user data received");
     }
-  },
+    
+    if (!res.data._id) {
+      console.error("❌ User ID missing:", res.data);
+      throw new Error("Invalid user data: missing _id");
+    }
+
+    set({ authUser: res.data });
+    toast.success("Logged in successfully");
+    
+    // Connect socket
+    get().connectSocket();
+    
+    console.log("🔐 [LOGIN] ✅ Login complete");
+    
+  } catch (error) {
+    console.error("🔐 [LOGIN] ❌ Error:", error.message);
+    
+    if (error.response) {
+      console.error("Status:", error.response.status);
+      console.error("Data:", error.response.data);
+    } else if (error.request) {
+      console.error("No response from server - CORS or network issue");
+    }
+    
+    const errorMessage = error?.response?.data?.message || 
+                        error?.message || 
+                        "Login failed";
+    
+    toast.error(errorMessage);
+    
+  } finally {
+    set({ isLoggingIn: false });
+    console.log("🔐 [LOGIN] 🏁 Login process completed");
+  }
+},
 
   // =========================
   // LOGOUT
