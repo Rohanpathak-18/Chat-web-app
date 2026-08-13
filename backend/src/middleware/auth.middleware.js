@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 
 export const protectRoute = async (req, res, next) => {
   try {
-    const token = req.cookies.jwt;
+    const token = req.cookies?.jwt;
 
     console.log("JWT received:", !!token);
 
@@ -17,6 +17,12 @@ export const protectRoute = async (req, res, next) => {
       token,
       process.env.JWT_SECRET
     );
+
+    if (!decoded?.userId) {
+      return res.status(401).json({
+        message: "Unauthorized - Invalid Token",
+      });
+    }
 
     const user = await User.findById(
       decoded.userId
@@ -33,7 +39,7 @@ export const protectRoute = async (req, res, next) => {
     next();
   } catch (error) {
     console.log(
-      "Error in protectRoute:",
+      "Error in protectRoute middleware:",
       error.message
     );
 
