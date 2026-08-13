@@ -6,7 +6,7 @@ import {
   logout,
   updateProfile,
   checkAuth,
-} from "../controllers/auth.controller.js";
+} from "../controller/auth.controller.js";
 
 import { protectRoute } from "../middleware/auth.middleware.js";
 
