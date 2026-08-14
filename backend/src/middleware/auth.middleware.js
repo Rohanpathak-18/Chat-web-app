@@ -1,55 +1,30 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.model.js";
 
-export const protectRoute = async (
-  req,
-  res,
-  next
-) => {
+export const protectRoute = async (req, res, next) => {
   try {
-    console.log(
-      "========== AUTH DEBUG =========="
-    );
+    console.log("========== AUTH DEBUG ==========");
 
-    console.log(
-      "Cookie header:",
-      req.headers.cookie
-    );
+    const authHeader = req.headers.authorization;
 
-    console.log(
-      "Cookies:",
-      req.cookies
-    );
+    console.log("Authorization header:", authHeader);
+    
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      console.log("❌ No token provided");
 
-    const token = req.cookies?.jwt;
-
-    console.log(
-      "JWT received:",
-      !!token
-    );
-
-    console.log(
-      "================================"
-    );
-
-    if (!token) {
       return res.status(401).json({
-        message:
-          "Unauthorized - No Token Provided",
+        message: "Unauthorized - No Token Provided",
       });
     }
+
+    const token = authHeader.split(" ")[1];
+
+    console.log("✅ Token received:", !!token);
 
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET
     );
-
-    if (!decoded) {
-      return res.status(401).json({
-        message:
-          "Unauthorized - Invalid Token",
-      });
-    }
 
     const user = await User.findById(
       decoded.userId
@@ -63,17 +38,16 @@ export const protectRoute = async (
 
     req.user = user;
 
+    console.log("✅ Authenticated user:", user.email);
+    console.log("================================");
+
     next();
 
   } catch (error) {
-    console.log(
-      "Error in protectRoute:",
-      error.message
-    );
+    console.log("❌ Auth error:", error.message);
 
     return res.status(401).json({
-      message:
-        "Unauthorized - Invalid Token",
+      message: "Unauthorized - Invalid Token",
     });
   }
 };

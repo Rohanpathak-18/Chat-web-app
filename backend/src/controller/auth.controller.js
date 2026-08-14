@@ -58,10 +58,7 @@ export const signup = async (req, res) => {
     });
 
     // IMPORTANT
-    generateToken(
-      newUser._id,
-      res
-    );
+  const token = generateToken(newUser._id);
 
     res.status(201).json({
       _id: newUser._id,
@@ -70,6 +67,7 @@ export const signup = async (req, res) => {
       profilePicture:
         newUser.profilePicture || "",
       createdAt: newUser.createdAt,
+      token,
     });
 
   } catch (error) {
@@ -120,20 +118,16 @@ console.log(user)
     }
 
     //  THIS MUST BE HERE
-    generateToken(user._id, res);
+const token = generateToken(user._id);
 
-    console.log(
-      "LOGIN SUCCESS:",
-      user.email
-    );
-
-    return res.status(200).json({
-      _id: user._id,
-      fullName: user.fullName,
-      email: user.email,
-      profilePicture: user.profilePicture || "",
-      createdAt: user.createdAt,
-    });
+return res.status(200).json({
+  _id: user._id,
+  fullName: user.fullName,
+  email: user.email,
+  profilePicture: user.profilePicture || "",
+  createdAt: user.createdAt,
+  token,
+});
 
   } catch (error) {
     console.log(

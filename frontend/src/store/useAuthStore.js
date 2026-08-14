@@ -74,6 +74,10 @@ export const useAuthStore = create((set, get) => ({
           "/auth/signup",
           data
         );
+        localStorage.setItem(
+  "token",
+  res.data.token
+);
 
       console.log(
         "Signup response:",
@@ -110,102 +114,67 @@ export const useAuthStore = create((set, get) => ({
   // =========================
   // LOGIN
   // =========================
-
 login: async (data) => {
-  console.log("🔐 [LOGIN] Starting login process");
-  console.log("🔐 [LOGIN] Login data:", { 
-    email: data?.email || data?.username || "unknown",
-    hasPassword: !!data?.password 
-  });
-  
   set({ isLoggingIn: true });
 
   try {
-    console.log("🔐 [LOGIN] Sending POST request to /auth/login");
-    
-    // ✅ FIXED: No trailing slash
-    const res = await axiosInstance.post("/auth/login", data);
-    
-    console.log("🔐 [LOGIN] ✅ Response received");
-    console.log("🔐 [LOGIN] Response status:", res.status);
-    console.log("🔐 [LOGIN] Response data:", res.data);
-    
-    if (!res.data) {
-      throw new Error("No user data received");
-    }
-    
-    if (!res.data._id) {
-      console.error("❌ User ID missing:", res.data);
-      throw new Error("Invalid user data: missing _id");
-    }
+    const res = await axiosInstance.post(
+      "/auth/login",
+      data
+    );
 
-    set({ authUser: res.data });
+    console.log("Login response:", res.data);
+
+    localStorage.setItem(
+      "token",
+      res.data.token
+    );
+
+    set({
+      authUser: res.data,
+    });
+
     toast.success("Logged in successfully");
-    
-    // Connect socket
+
     get().connectSocket();
-    
-    console.log("🔐 [LOGIN] ✅ Login complete");
-    
+
   } catch (error) {
-    console.error("🔐 [LOGIN] ❌ Error:", error.message);
-    
-    if (error.response) {
-      console.error("Status:", error.response.status);
-      console.error("Data:", error.response.data);
-    } else if (error.request) {
-      console.error("No response from server - CORS or network issue");
-    }
-    
-    const errorMessage = error?.response?.data?.message || 
-                        error?.message || 
-                        "Login failed";
-    
-    toast.error(errorMessage);
-    
+    console.error(
+      "Login error:",
+      error?.response?.data
+    );
+
+    toast.error(
+      error?.response?.data?.message ||
+      "Login failed"
+    );
+
   } finally {
-    set({ isLoggingIn: false });
-    console.log("🔐 [LOGIN] 🏁 Login process completed");
+    set({
+      isLoggingIn: false,
+    });
   }
 },
-
   // =========================
   // LOGOUT
   // =========================
+logout: async () => {
+  try {
+    localStorage.removeItem("token");
 
-  logout: async () => {
-    try {
-      await axiosInstance.post(
-        "/auth/logout"
-      );
+    get().disconnectSocket();
 
-      get().disconnectSocket();
+    set({
+      authUser: null,
+      onlineUsers: [],
+    });
 
-      set({
-        authUser: null,
-        onlineUsers: [],
-      });
+    toast.success("Logged out successfully");
 
-      toast.success(
-        "Logged out successfully"
-      );
-    } catch (error) {
-      console.log(
-        "Logout status:",
-        error?.response?.status
-      );
-
-      console.log(
-        "Logout error:",
-        error?.response?.data
-      );
-
-      toast.error(
-        error?.response?.data?.message ||
-          "Logout failed"
-      );
-    }
-  },
+  } catch (error) {
+    console.log(error);
+  }
+},
 
   // =========================
   // UPDATE PROFILE

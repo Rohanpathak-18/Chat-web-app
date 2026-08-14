@@ -19,19 +19,12 @@ const PORT = process.env.PORT || 5001;
 
 const allowedOrigins = [
   "http://localhost:5173",
-  process.env.CLIENT_URL,
+  "https://chatsphere-web.onrender.com",
 ];
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ CORS blocked:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
   })
 );
