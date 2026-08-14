@@ -154,12 +154,15 @@ console.log(user)
 export const logout = (req, res) => {
   try {
     res.cookie("jwt", "", {
-      maxAge: 0,
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      path: "/",
-    });
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite:
+    process.env.NODE_ENV === "production"
+      ? "none"
+      : "lax",
+  maxAge: 0,
+  path: "/",
+});
 
     res.status(200).json({
       message: "Logged out successfully",
